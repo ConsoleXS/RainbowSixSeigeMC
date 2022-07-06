@@ -1,0 +1,6 @@
+name: RainbowSix
+version: '${project.version}'
+main: com.consolex.rainbowsix.RainbowSix
+api-version: 1.18
+authors: [ ConsoleX ]
+description: Knockoff Rainbow Six Seige for Minecraft
