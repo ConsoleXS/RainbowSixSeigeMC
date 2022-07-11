@@ -6,6 +6,7 @@ import com.consolex.rainbowsix.game.MapSystem.LocalGameMap;
 import com.consolex.rainbowsix.game.Team;
 import com.consolex.rainbowsix.game.commands.QuitCommand;
 import com.consolex.rainbowsix.game.commands.StartCommand;
+import com.consolex.rainbowsix.game.events.ShopGUI;
 import com.consolex.rainbowsix.game.events.Gameplay;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -16,6 +17,7 @@ public final class RainbowSix extends JavaPlugin {
     private GameManager gameManager;
     private Team team;
     private GameMap map;
+
 
     @Override
     public void onEnable() {
@@ -36,6 +38,7 @@ public final class RainbowSix extends JavaPlugin {
         this.gameManager = new GameManager(map, this);
         this.team = new Team();
         getServer().getPluginManager().registerEvents(new Gameplay(gameManager), this);
+        getServer().getPluginManager().registerEvents(new ShopGUI(gameManager), this);
 
         getCommand("start").setExecutor(new StartCommand(gameManager));
         getCommand("quit").setExecutor(new QuitCommand(gameManager));

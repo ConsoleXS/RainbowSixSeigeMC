@@ -10,17 +10,23 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.util.io.BukkitObjectInputStream;
 
 import java.util.HashMap;
 
 public class Gameplay implements Listener {
+
+
+    // TODO: Diamond sword speed boost, Wearing armor auto enchants it, KIT ABILITIES?
+
+
 
     private GameManager gameManager;
 
 
     HashMap<Player, KitType> playerKits = new HashMap<>();
     HashMap<Player, Integer> abilityCooldown = new HashMap<>();
+
+    private ShopGUI shopGUI;
 
 
     public Gameplay(GameManager gameManager)
@@ -108,14 +114,17 @@ public class Gameplay implements Listener {
         {
             if (gameManager.gameState == GameState.GAME_STARTING)
             {
-                //OPEN GUI
+                //OPEN KIT GUI
+            }
+            else if (gameManager.gameState == GameState.ROUND_STARTING)
+            {
+                shopGUI.openInventory(player);
             }
             else {
                 player.sendMessage(ChatColor.RED + "You cannot select kits now!");
             }
         }
     }
-
 
 
 

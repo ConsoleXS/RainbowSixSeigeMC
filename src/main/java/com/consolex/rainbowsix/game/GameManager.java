@@ -24,7 +24,7 @@ public class GameManager {
     private BombTimer bombTimer;
     RainbowSix plugin;
 
-    HashMap<Player, Integer> creditCount = new HashMap<>();
+    public HashMap<Player, Integer> creditCount = new HashMap<>();
 
     public GameManager(GameMap gameMap, RainbowSix plugin)
     {
@@ -103,7 +103,7 @@ public class GameManager {
                         ItemStack ability = new ItemStack(Material.GRAY_DYE);
                         ItemMeta meta = ability.getItemMeta();
                         assert meta != null;
-                        meta.setDisplayName(ChatColor.RED + "KIT ABILITY");
+                        meta.setDisplayName(ChatColor.RED + "KIT ABILITY (Use during round)");
                         ability.setItemMeta(meta);
                     }
                 }
