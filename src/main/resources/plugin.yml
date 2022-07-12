@@ -4,3 +4,10 @@ main: com.consolex.rainbowsix.RainbowSix
 api-version: 1.18
 authors: [ ConsoleX ]
 description: Knockoff Rainbow Six Seige for Minecraft
+commands:
+  start:
+    description: Starts game
+    usage: /<command>
+  quit:
+    description: Quits game
+    usage: /<command>
