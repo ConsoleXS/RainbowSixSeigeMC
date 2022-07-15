@@ -5,13 +5,21 @@ import com.consolex.rainbowsix.game.MapSystem.GameMap;
 import com.consolex.rainbowsix.game.tasks.BombTimer;
 import com.consolex.rainbowsix.game.tasks.GameStartTimer;
 import com.consolex.rainbowsix.game.tasks.LobbyStartTimer;
+import com.consolex.rainbowsix.game.tasks.RoundStartTimer;
 import jdk.tools.jlink.plugin.Plugin;
 import org.bukkit.*;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.profile.PlayerProfile;
 import org.bukkit.util.io.BukkitObjectInputStream;
+import sun.java2d.cmm.Profile;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -21,6 +29,7 @@ public class GameManager {
     private GameMap gameMap;
     private GameStartTimer gameStartTimer;
     private LobbyStartTimer lobbyStartTimer;
+    private RoundStartTimer roundStartTimer;
     private BombTimer bombTimer;
     RainbowSix plugin;
 
@@ -31,6 +40,11 @@ public class GameManager {
         this.gameMap = gameMap;
         this.plugin = plugin;
     }
+
+
+    Location bombSpawn;
+
+
 
     public void setGameState(GameState gameState)
     {
@@ -53,6 +67,7 @@ public class GameManager {
                     p.setHealth(20);
                     creditCount.clear();
                 }
+                gameMap.restoreFromSource();
                 break;
             case LOBBY_STARTING:
                 this.gameState = GameState.LOBBY_STARTING;
@@ -63,6 +78,7 @@ public class GameManager {
             case GAME_STARTING:
                 //Start timer for kit selection, only happens once per game!
                 //Give all players starting 800 credits!
+                Count.initializeTeamScore();
                 this.gameState = GameState.GAME_STARTING;
                 for (Player p : Bukkit.getOnlinePlayers())
                 {
@@ -83,6 +99,8 @@ public class GameManager {
                 break;
             case ROUND_STARTING:
                 this.gameState = GameState.ROUND_STARTING;
+                this.roundStartTimer = new RoundStartTimer(this);
+                this.roundStartTimer.runTaskTimer(plugin, 0, 20);
                 for (Player p : Bukkit.getOnlinePlayers())
                 {
                     World map = gameMap.getWorld();
@@ -105,6 +123,7 @@ public class GameManager {
                         assert meta != null;
                         meta.setDisplayName(ChatColor.RED + "KIT ABILITY (Use during round)");
                         ability.setItemMeta(meta);
+                        p.getInventory().addItem(ability);
                     }
                 }
 
@@ -117,6 +136,33 @@ public class GameManager {
                 this.bombTimer = new BombTimer(this);
                 this.bombTimer.runTaskTimer(plugin, 0, 20);
                 //SPAWN THE BOMB
+                Location defenderSpawnOne = new Location(gameMap.getWorld(), 101, 101, 101);
+                Location defenderSpawnTwo = new Location(gameMap.getWorld(), 102, 102, 102);
+                Location defenderSpawnThree = new Location(gameMap.getWorld(), 103, 103, 103);
+                ArrayList<Location> randomLocations = new ArrayList<>();
+                randomLocations.add(defenderSpawnOne);
+                randomLocations.add(defenderSpawnTwo);
+                randomLocations.add(defenderSpawnThree);
+                Location randomBombSpawn = randomLocations.get((int) (Math.random() * 2) + 1);
+                bombSpawn = randomBombSpawn;
+                for (Player p : Bukkit.getOnlinePlayers())
+                {
+                    if (Team.getTeam(p) == TeamType.DEFENDERS)
+                    {
+                        p.teleport(randomBombSpawn);
+                    }
+                }
+                ArmorStand bomb = (ArmorStand) gameMap.getWorld().spawnEntity(randomBombSpawn, EntityType.ARMOR_STAND);
+                bomb.getEquipment().setHelmet(new ItemStack(Material.LODESTONE));
+                bomb.setInvisible(true);
+                bomb.setGravity(false);
+                bomb.setInvulnerable(true);
+                bomb.setBasePlate(false);
+                bomb.setSmall(true);
+                bomb.setCustomName("Bomb");
+
+
+
                 break;
             case ROUND_ENDED_ATTACKERS:
                 this.gameState = GameState.ROUND_ENDED_ATTACKERS;
@@ -177,7 +223,10 @@ public class GameManager {
         setGameState(GameState.ROUND_ENDED_DEFENDERS);
     }
 
-
+    public Location getBombLocation()
+    {
+        return bombSpawn;
+    }
 
 
 

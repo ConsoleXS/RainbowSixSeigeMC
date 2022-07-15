@@ -1,6 +1,7 @@
 package com.consolex.rainbowsix.game.events;
 
 import com.consolex.rainbowsix.game.GameManager;
+import com.consolex.rainbowsix.game.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -10,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -57,9 +59,6 @@ public class ShopGUI implements Listener {
     }
 
     // You can open the inventory with this
-    public void openInventory(final HumanEntity ent) {
-        ent.openInventory(inv);
-    }
 
     // Check for clicks on items
     @EventHandler
@@ -95,4 +94,27 @@ public class ShopGUI implements Listener {
             event.setCancelled(true);
         }
     }
+
+    @EventHandler
+    public void playerRightClick(PlayerInteractEvent event)
+    {
+        Player player = event.getPlayer();
+        if (player.getInventory().getItemInMainHand().getType().equals(Material.NETHER_STAR))
+        {
+            if (gameManager.gameState == GameState.GAME_STARTING)
+            {
+                //OPEN KIT GUI
+            }
+            else if (gameManager.gameState == GameState.ROUND_STARTING)
+            {
+                player.openInventory(inv);
+            }
+            else {
+                player.sendMessage(ChatColor.RED + "You cannot select kits now!");
+            }
+        }
+    }
+
+
+
 }

@@ -1,9 +1,14 @@
 package com.consolex.rainbowsix.game.events;
 
+import com.consolex.rainbowsix.RainbowSix;
 import com.consolex.rainbowsix.game.*;
+import com.consolex.rainbowsix.game.tasks.BombTimer;
+import com.consolex.rainbowsix.game.tasks.DiffuseTimer;
+import com.consolex.rainbowsix.game.tasks.GameStartTimer;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,29 +31,38 @@ public class Gameplay implements Listener {
     HashMap<Player, KitType> playerKits = new HashMap<>();
     HashMap<Player, Integer> abilityCooldown = new HashMap<>();
 
-    private ShopGUI shopGUI;
+    private DiffuseTimer diffuseTimer;
+    private RainbowSix plugin;
 
 
-    public Gameplay(GameManager gameManager)
+
+
+    public Gameplay(GameManager gameManager, RainbowSix plugin)
     {
         this.gameManager = gameManager;
+        this.plugin = plugin;
     }
+
+
 
     @EventHandler
     public void playerTakeDamage(EntityDamageEvent event)
     {
-        Player player = (Player) event.getEntity();
-        if (event.getEntity() instanceof Player && gameManager.gameState != GameState.ROUND_ACTIVE)
+        if (event.getEntity() instanceof  Player)
         {
-            event.setCancelled(true);
-        }
-        else if (player.getHealth() - event.getDamage() <= 0)
-        {
-            event.setCancelled(true);
-            player.setGameMode(GameMode.SPECTATOR);
-            player.getInventory().clear();
-            Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " has died!");
+            Player player = (Player) event.getEntity();
+            if (event.getEntity() instanceof Player && gameManager.gameState != GameState.ROUND_ACTIVE)
+            {
+                event.setCancelled(true);
+            }
+            else if (player.getHealth() - event.getDamage() <= 0)
+            {
+                event.setCancelled(true);
+                player.setGameMode(GameMode.SPECTATOR);
+                player.getInventory().clear();
+                Bukkit.broadcastMessage(ChatColor.GOLD + player.getName() + " has died!");
 
+            }
         }
 
     }
@@ -92,37 +106,27 @@ public class Gameplay implements Listener {
         World world = Bukkit.getServer().getWorld("world");
         if (block.getType().equals(Material.RED_CONCRETE) && Team.getTeam(player) != TeamType.ATTACKERS)
         {
-            Team.addToTeam(TeamType.DEFENDERS, player);
+            Team.addToTeam(TeamType.ATTACKERS, player);
             player.teleport(new Location(world, 1, 100, -1));
-            Bukkit.broadcastMessage(ChatColor.RED + player.getDisplayName() + " joined red team!");
+            Bukkit.broadcastMessage(ChatColor.RED + player.getDisplayName() + " joined attackers team!");
             player.setPlayerListName(ChatColor.RED + player.getDisplayName());
         }
         else if (block.getType().equals(Material.BLUE_CONCRETE) && Team.getTeam(player) != TeamType.DEFENDERS)
         {
             Team.addToTeam(TeamType.DEFENDERS, player);
             player.teleport(new Location(world, 1, 100, 1));
-            Bukkit.broadcastMessage(ChatColor.BLUE + player.getDisplayName() + " joined blue team!");
+            Bukkit.broadcastMessage(ChatColor.BLUE + player.getDisplayName() + " joined defenders team!");
             player.setPlayerListName(ChatColor.BLUE + player.getDisplayName());
         }
     }
 
     @EventHandler
-    public void playerRightClick(PlayerInteractEvent event)
+    public void defuseBomb(PlayerInteractAtEntityEvent event)
     {
-        Player player = event.getPlayer();
-        if (player.getInventory().getItemInMainHand().getType().equals(Material.NETHER_STAR))
+        if (event.getRightClicked() instanceof ArmorStand)
         {
-            if (gameManager.gameState == GameState.GAME_STARTING)
-            {
-                //OPEN KIT GUI
-            }
-            else if (gameManager.gameState == GameState.ROUND_STARTING)
-            {
-                shopGUI.openInventory(player);
-            }
-            else {
-                player.sendMessage(ChatColor.RED + "You cannot select kits now!");
-            }
+            this.diffuseTimer = new DiffuseTimer(gameManager);
+            this.diffuseTimer.runTaskTimer(plugin, 0, 20);
         }
     }
 

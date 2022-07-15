@@ -37,7 +37,7 @@ public final class RainbowSix extends JavaPlugin {
 
         this.gameManager = new GameManager(map, this);
         this.team = new Team();
-        getServer().getPluginManager().registerEvents(new Gameplay(gameManager), this);
+        getServer().getPluginManager().registerEvents(new Gameplay(gameManager, this), this);
         getServer().getPluginManager().registerEvents(new ShopGUI(gameManager), this);
 
         getCommand("start").setExecutor(new StartCommand(gameManager));
