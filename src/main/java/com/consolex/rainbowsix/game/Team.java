@@ -9,7 +9,7 @@ public class Team {
     private static List<String> attackers = new ArrayList<String>();
     private static List<String> defenders = new ArrayList<String>();
 
-    public static void addToTeam(TeamType type, Player player)
+    public static void addToTeam(TeamTypes type, Player player)
     {
         if (isInTeam(player))
         {
@@ -39,7 +39,7 @@ public class Team {
         attackers.clear();
     }
 
-    public static TeamType getTeam(Player player)
+    public static TeamTypes getTeam(Player player)
     {
         if(!isInTeam(player))
         {
@@ -47,15 +47,15 @@ public class Team {
         }
 
 
-        TeamType teamType = null;
+        TeamTypes teamType = null;
 
         if (attackers.contains(player.getName()))
         {
-            teamType = TeamType.ATTACKERS;
+            teamType = TeamTypes.ATTACKERS;
         }
         else if (defenders.contains(player.getName()))
         {
-            teamType = TeamType.DEFENDERS;
+            teamType = TeamTypes.DEFENDERS;
         }
 
 

@@ -105,7 +105,7 @@ public class GameManager {
                 {
                     World map = gameMap.getWorld();
 
-                    if (Team.getTeam(p) == TeamType.ATTACKERS)
+                    if (Team.getTeam(p) == TeamTypes.ATTACKERS)
                     {
                         p.teleport(new Location(map, -1, 100, -1));
                     }
@@ -147,7 +147,7 @@ public class GameManager {
                 bombSpawn = randomBombSpawn;
                 for (Player p : Bukkit.getOnlinePlayers())
                 {
-                    if (Team.getTeam(p) == TeamType.DEFENDERS)
+                    if (Team.getTeam(p) == TeamTypes.DEFENDERS)
                     {
                         p.teleport(randomBombSpawn);
                     }
@@ -169,10 +169,10 @@ public class GameManager {
                 // Attackers get a point! (And money)
                 // Give players money per kill, add their kills to their summative kills, and remove their current kill count.
                 // End game if 5 rounds are won.
-                Count.addPoint(TeamType.ATTACKERS);
+                Count.addPoint(TeamTypes.ATTACKERS);
                 for (Player p : Bukkit.getOnlinePlayers())
                 {
-                    if (Team.getTeam(p) == TeamType.ATTACKERS)
+                    if (Team.getTeam(p) == TeamTypes.ATTACKERS)
                     {
                         if (creditCount.containsKey(p))
                         {
@@ -180,7 +180,7 @@ public class GameManager {
                         }
                     }
                 }
-                if (Count.getPoints(TeamType.ATTACKERS) >= 5)
+                if (Count.getPoints(TeamTypes.ATTACKERS) >= 5)
                 {
                     setGameState(GameState.LOBBY);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "ATTACKERS WIN!");
@@ -192,10 +192,10 @@ public class GameManager {
                 break;
             case ROUND_ENDED_DEFENDERS:
                 this.gameState = GameState.ROUND_ENDED_DEFENDERS;
-                Count.addPoint(TeamType.DEFENDERS);
+                Count.addPoint(TeamTypes.DEFENDERS);
                 for (Player p : Bukkit.getOnlinePlayers())
                 {
-                    if (Team.getTeam(p) == TeamType.DEFENDERS)
+                    if (Team.getTeam(p) == TeamTypes.DEFENDERS)
                     {
                         if (creditCount.containsKey(p))
                         {
@@ -203,7 +203,7 @@ public class GameManager {
                         }
                     }
                 }
-                if (Count.getPoints(TeamType.DEFENDERS) >= 5)
+                if (Count.getPoints(TeamTypes.DEFENDERS) >= 5)
                 {
                     setGameState(GameState.LOBBY);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "DEFENDERS WIN!");

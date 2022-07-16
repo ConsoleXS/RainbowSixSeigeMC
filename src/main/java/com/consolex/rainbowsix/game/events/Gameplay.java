@@ -104,16 +104,16 @@ public class Gameplay implements Listener {
         Location location = player.getLocation();
         Block block = location.getBlock().getRelative(BlockFace.DOWN);
         World world = Bukkit.getServer().getWorld("world");
-        if (block.getType().equals(Material.RED_CONCRETE) && Team.getTeam(player) != TeamType.ATTACKERS)
+        if (block.getType().equals(Material.RED_CONCRETE) && Team.getTeam(player) != TeamTypes.ATTACKERS)
         {
-            Team.addToTeam(TeamType.ATTACKERS, player);
+            Team.addToTeam(TeamTypes.ATTACKERS, player);
             player.teleport(new Location(world, 1, 100, -1));
             Bukkit.broadcastMessage(ChatColor.RED + player.getDisplayName() + " joined attackers team!");
             player.setPlayerListName(ChatColor.RED + player.getDisplayName());
         }
-        else if (block.getType().equals(Material.BLUE_CONCRETE) && Team.getTeam(player) != TeamType.DEFENDERS)
+        else if (block.getType().equals(Material.BLUE_CONCRETE) && Team.getTeam(player) != TeamTypes.DEFENDERS)
         {
-            Team.addToTeam(TeamType.DEFENDERS, player);
+            Team.addToTeam(TeamTypes.DEFENDERS, player);
             player.teleport(new Location(world, 1, 100, 1));
             Bukkit.broadcastMessage(ChatColor.BLUE + player.getDisplayName() + " joined defenders team!");
             player.setPlayerListName(ChatColor.BLUE + player.getDisplayName());

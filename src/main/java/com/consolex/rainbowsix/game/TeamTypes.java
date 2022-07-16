@@ -1,6 +1,6 @@
 package com.consolex.rainbowsix.game;
 
-public enum TeamType {
+public enum TeamTypes {
     DEFENDERS, //Defending the bomb
     ATTACKERS
 }
