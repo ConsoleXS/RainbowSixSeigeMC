@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class BombTimer extends BukkitRunnable {
     private final GameManager gameManager;
-    private int timeLeft = 10;
+    private int timeLeft = 28;
 
 
     public BombTimer(GameManager gameManager)

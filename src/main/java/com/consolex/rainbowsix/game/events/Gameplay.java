@@ -48,7 +48,7 @@ public class Gameplay implements Listener {
     @EventHandler
     public void playerTakeDamage(EntityDamageEvent event)
     {
-        if (event.getEntity() instanceof  Player)
+        if (event.getEntity() instanceof Player)
         {
             Player player = (Player) event.getEntity();
             if (event.getEntity() instanceof Player && gameManager.gameState != GameState.ROUND_ACTIVE)
@@ -120,13 +120,20 @@ public class Gameplay implements Listener {
         }
     }
 
+
     @EventHandler
     public void defuseBomb(PlayerInteractAtEntityEvent event)
     {
         if (event.getRightClicked() instanceof ArmorStand)
         {
-            this.diffuseTimer = new DiffuseTimer(gameManager);
-            this.diffuseTimer.runTaskTimer(plugin, 0, 20);
+            if (!gameManager.diffusing)
+            {
+                this.diffuseTimer = new DiffuseTimer(gameManager);
+                this.diffuseTimer.runTaskTimer(plugin, 0, 20);
+                gameManager.diffusing = true;
+            }
+
+            event.setCancelled(true);
         }
     }
 

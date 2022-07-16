@@ -11,3 +11,4 @@ commands:
   quit:
     description: Quits game
     usage: /<command>
+depend: [QualityArmory]

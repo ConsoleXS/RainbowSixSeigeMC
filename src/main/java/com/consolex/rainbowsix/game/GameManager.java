@@ -7,17 +7,14 @@ import com.consolex.rainbowsix.game.tasks.GameStartTimer;
 import com.consolex.rainbowsix.game.tasks.LobbyStartTimer;
 import com.consolex.rainbowsix.game.tasks.RoundStartTimer;
 import jdk.tools.jlink.plugin.Plugin;
+import me.zombie_striker.qg.api.QualityArmory;
 import org.bukkit.*;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.profile.PlayerProfile;
-import org.bukkit.util.io.BukkitObjectInputStream;
-import sun.java2d.cmm.Profile;
+
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +38,7 @@ public class GameManager {
         this.plugin = plugin;
     }
 
-
+    public boolean diffusing = false;
     Location bombSpawn;
 
 
@@ -86,7 +83,7 @@ public class GameManager {
                     if (Team.isInTeam(p))
                     {
                         p.getInventory().addItem(new ItemStack(Material.NETHER_STAR, 1));
-                        p.sendTitle(ChatColor.GOLD + "Kit Selection!", "Right click nether star lol", 1, 1, 1);
+                        p.sendTitle(ChatColor.GOLD + "Kit Selection!", "Right click nether star lol", 20, 200, 20);
                         World map = gameMap.getWorld();
                         p.teleport(new Location(map, -1, 100, -1));
                         p.setHealth(20);
@@ -108,6 +105,7 @@ public class GameManager {
                     if (Team.getTeam(p) == TeamTypes.ATTACKERS)
                     {
                         p.teleport(new Location(map, -1, 100, -1));
+                        p.setGameMode(GameMode.ADVENTURE);
                     }
                     else
                     {
@@ -116,7 +114,7 @@ public class GameManager {
                     if (Team.isInTeam(p))
                     {
                         p.getInventory().addItem(new ItemStack(Material.NETHER_STAR, 1));
-                        p.sendTitle(ChatColor.GOLD + "Buy Guns!", "Right click nether star again lmao", 1, 1, 1);
+                        p.sendTitle(ChatColor.GOLD + "Buy Guns!", "Right click nether star again lmao", 20, 200, 20);
                         p.sendMessage(ChatColor.GREEN + "- You have " + creditCount.get(p) + " credits -");
                         ItemStack ability = new ItemStack(Material.GRAY_DYE);
                         ItemMeta meta = ability.getItemMeta();
@@ -126,6 +124,8 @@ public class GameManager {
                         p.getInventory().addItem(ability);
                     }
                 }
+
+
 
                 //Clear items and Teleport teams to their spawns, players can buy guns with money, not select kits.
                 // Give action item
@@ -160,6 +160,7 @@ public class GameManager {
                 bomb.setBasePlate(false);
                 bomb.setSmall(true);
                 bomb.setCustomName("Bomb");
+                bomb.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
 
 
 
@@ -170,6 +171,7 @@ public class GameManager {
                 // Give players money per kill, add their kills to their summative kills, and remove their current kill count.
                 // End game if 5 rounds are won.
                 Count.addPoint(TeamTypes.ATTACKERS);
+                Bukkit.broadcastMessage(ChatColor.RED + "Attackers have won, they now have " + Count.getPoints(TeamTypes.ATTACKERS) + " points.");
                 for (Player p : Bukkit.getOnlinePlayers())
                 {
                     if (Team.getTeam(p) == TeamTypes.ATTACKERS)
@@ -184,6 +186,10 @@ public class GameManager {
                 {
                     setGameState(GameState.LOBBY);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "ATTACKERS WIN!");
+                    for (Player p : Bukkit.getOnlinePlayers())
+                    {
+                        p.sendTitle(ChatColor.RED + "ATTACKERS WIN!", "EZ GG", 20, 200, 20);
+                    }
                 }
                 else {
                     setGameState(GameState.ROUND_STARTING);
@@ -193,6 +199,7 @@ public class GameManager {
             case ROUND_ENDED_DEFENDERS:
                 this.gameState = GameState.ROUND_ENDED_DEFENDERS;
                 Count.addPoint(TeamTypes.DEFENDERS);
+                Bukkit.broadcastMessage(ChatColor.RED + "Defenders have won, they now have " + Count.getPoints(TeamTypes.DEFENDERS) + " points.");
                 for (Player p : Bukkit.getOnlinePlayers())
                 {
                     if (Team.getTeam(p) == TeamTypes.DEFENDERS)
@@ -207,6 +214,10 @@ public class GameManager {
                 {
                     setGameState(GameState.LOBBY);
                     Bukkit.broadcastMessage(ChatColor.GOLD + "DEFENDERS WIN!");
+                    for (Player p : Bukkit.getOnlinePlayers())
+                    {
+                        p.sendTitle(ChatColor.BLUE + "DEFENDERS WIN!", "EZ GG", 20, 200, 20);
+                    }
                 }
                 else {
                     setGameState(GameState.ROUND_STARTING);
@@ -220,7 +231,15 @@ public class GameManager {
     {
         bombTimer.cancel();
         Bukkit.broadcastMessage("Bomb Defused!");
-        setGameState(GameState.ROUND_ENDED_DEFENDERS);
+        diffusing = false;
+        setGameState(GameState.ROUND_ENDED_ATTACKERS);
+        for (Entity entity : gameMap.getWorld().getEntities())
+        {
+            if (entity.getType().equals(EntityType.ARMOR_STAND))
+            {
+                entity.remove();
+            }
+        }
     }
 
     public Location getBombLocation()

@@ -19,9 +19,10 @@ public class DiffuseTimer extends BukkitRunnable {
 
     @Override
     public void run() {
-        if (Objects.requireNonNull(gameManager.getBombLocation().getWorld()).getNearbyEntities(gameManager.getBombLocation(), 1.5, 1.5, 1.5).size() >= 1)
+        if (gameManager.getBombLocation().getWorld().getNearbyEntities(gameManager.getBombLocation(), 1.5, 1.5, 1.5).size() >= 1)
         {
             timeLeft--;
+            Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(ChatColor.BOLD + "Bomb Defusing... (" + timeLeft + ")"));
         }
         else {
             timeLeft = 8;
@@ -38,6 +39,6 @@ public class DiffuseTimer extends BukkitRunnable {
             return;
         }
 
-        Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(ChatColor.BOLD + "Bomb Defusing... (" + timeLeft + ")"));
+
     }
 }
